@@ -28,7 +28,10 @@ def get_mood(request):
     serializer = DailyLogSerializers(data=request.data)
     if serializer.is_valid():
         # print(serializer.data['log'])
-        mood = get_emotion(serializer.data['log'])
+        log = serializer.data['log']
+        if (log is None or (not isinstance(log, str)) or len(log) < 10):
+            return Response({"message": "invalid input"}, status=status.HTTP_400_BAD_REQUEST)
+        mood = get_emotion(log)
         return Response({"mood": mood}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "invalid input"}, status=status.HTTP_400_BAD_REQUEST)
